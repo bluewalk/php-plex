@@ -2,7 +2,7 @@
 
 /**
  * Plex Library Item Media File
- * 
+ *
  * @category php-plex
  * @package Plex_Server_Library_Item
  * @subpackage Plex_Server_Library_Item_Media
@@ -12,7 +12,7 @@
  * @version 0.0.2.5
  *
  * This file is part of php-plex.
- * 
+ *
  * php-plex is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -26,7 +26,7 @@
 
 /**
  * Class that represents a file associated with a media item.
- * 
+ *
  * @category php-plex
  * @package Plex_Server_Library_Item
  * @subpackage Plex_Server_Library_Item_Media
@@ -43,40 +43,42 @@ class Plex_Server_Library_Item_Media_File
 	 * @var integer
 	 */
 	private $id;
-	
+
 	/**
 	 * The key of the file.
 	 * @var string
 	 */
 	private $key;
-	
+
 	/**
 	 * The duration of the file in milliseconds.
 	 * @var integer
 	 */
 	private $duration;
-	
+
 	/**
 	 * Full path to the file.
 	 * @var string
 	 */
 	private $file;
-	
+
 	/**
 	 * Size of the file in bytes.
 	 * @var integer
 	 */
 	private $size;
-	
+
 	/**
 	 * Container of the file.
 	 * @var string
 	 */
 	private $container;
 
+    private $streams;
+
 	/**
 	 * Sets an array of file info to their corresponding class members.
-	 * 
+	 *
 	 * @param array $rawFile An array of the raw file info returned from the
 	 * Plex HTTP API.
 	 *
@@ -88,7 +90,7 @@ class Plex_Server_Library_Item_Media_File
 	 * @uses Plex_Server_Library_Item_Media_File::setContainer()
 	 *
 	 * @return void
-	 */	
+	 */
 	public function __construct($rawFile)
 	{
 		if (isset($rawFile['id'])) {
@@ -109,8 +111,19 @@ class Plex_Server_Library_Item_Media_File
 		if (isset($rawFile['container'])) {
 			$this->setContainer($rawFile['container']);
 		}
+
+        if (isset($rawFile['Stream'])) {
+    	    $streams = array();
+    		foreach ($rawFile['Stream'] as $stream) {
+    			$streams[] = new Plex_Server_Library_Item_Media_Stream($stream);
+    		}
+
+    		if (!empty($streams)) {
+    			$this->setStreams($streams);
+    		}
+        }
 	}
-	
+
 	/**
 	 * Returns the ID of the file.
 	 *
@@ -122,21 +135,21 @@ class Plex_Server_Library_Item_Media_File
 	{
 		return $this->id;
 	}
-	
+
 	/**
 	 * Sets the ID of the file.
 	 *
 	 * @uses Plex_Server_Library_Item_Media_File::$id
 	 *
 	 * @param integer $id The ID of the file.
-	 * 
+	 *
 	 * @return void
 	 */
 	public function setId($id)
 	{
 		$this->id = $id;
 	}
-	
+
 	/**
 	 * Returns the key of the file.
 	 *
@@ -148,7 +161,7 @@ class Plex_Server_Library_Item_Media_File
 	{
 		return $this->key;
 	}
-	
+
 	/**
 	 * Sets the key of the file.
 	 *
@@ -162,7 +175,7 @@ class Plex_Server_Library_Item_Media_File
 	{
 		$this->key = $key;
 	}
-	
+
 	/**
 	 * Returns the duration of the file.
 	 *
@@ -174,7 +187,7 @@ class Plex_Server_Library_Item_Media_File
 	{
 		return $this->duration;
 	}
-	
+
 	/**
 	 * Sets the duration of the file.
 	 *
@@ -200,7 +213,7 @@ class Plex_Server_Library_Item_Media_File
 	{
 		return $this->file;
 	}
-	
+
 	/**
 	 * Sets the path of the file.
 	 *
@@ -226,7 +239,7 @@ class Plex_Server_Library_Item_Media_File
 	{
 		return $this->size;
 	}
-	
+
 	/**
 	 * Sets the size of the file.
 	 *
@@ -240,7 +253,7 @@ class Plex_Server_Library_Item_Media_File
 	{
 		$this->size = $size;
 	}
-	
+
 	/**
 	 * Returns the container of the file.
 	 *
@@ -252,7 +265,7 @@ class Plex_Server_Library_Item_Media_File
 	{
 		return $this->container;
 	}
-	
+
 	/**
 	 * Sets the container of the file.
 	 *
@@ -266,4 +279,32 @@ class Plex_Server_Library_Item_Media_File
 	{
 		$this->container = $container;
 	}
+
+	/**
+	 * Returns the streams for the file
+	 *
+	 * @uses Plex_Server_Library_Item_Media_File::$streams
+     *
+     * @uses Plex_Server_Library_Item_Media_Stream
+	 *
+	 * @return array Array containing Plex_Server_Library_Item_Media_Stream objects
+	 */
+    public function getStreams()
+    {
+        return $this->streams;
+    }
+
+	/**
+	 * Sets the size of the file.
+	 *
+	 * @uses Plex_Server_Library_Item_Media_File::$streams
+	 *
+	 * @param array $streams Array of streams
+	 *
+	 * @retur void
+	 */
+    public function setStreams($streams)
+    {
+        $this->streams = $streams;
+    }
 }
